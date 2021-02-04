@@ -1,7 +1,7 @@
 view: counters {
   derived_table: {
     sql:
-    SELECT
+    SELECT -- hello, general kenobi
         client_info.client_id,
         CAST(DATE(submission_timestamp) AS TIMESTAMP) AS submission_date,
         key,
