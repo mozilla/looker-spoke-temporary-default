@@ -1,7 +1,7 @@
 view: counters {
   derived_table: {
     sql:
-    SELECT -- hello, general kenobi
+    SELECT
         client_info.client_id,
         CAST(DATE(submission_timestamp) AS TIMESTAMP) AS submission_date,
         key,
@@ -33,7 +33,7 @@ view: counters {
         mozfun.stats.mode_last(ARRAY_AGG(metadata.geo.subdivision1)) AS subdivision1,
         mozfun.stats.mode_last(ARRAY_AGG(metadata.geo.subdivision2)) AS subdivision2,
     FROM
-        `moz-fx-data-shared-prod`.org_mozilla_ios_firefox.metrics m
+        `moz-fx-data-shared-prod`.org_mozilla_ios_firefox{% parameter release_channel %}.metrics m
         CROSS JOIN UNNEST({% if metric._parameter_value contains "labeled_counter" %}
                             ARRAY(
                                SELECT DISTINCT AS STRUCT key
@@ -49,6 +49,19 @@ view: counters {
         client_id,
         key,
         submission_date;;
+  }
+
+  parameter: release_channel {
+    default_value: ""
+    type: unquoted
+    allowed_value: {
+      label: "Release"
+      value: ""
+    }
+    allowed_value: {
+      label: "Beta"
+      value: "beta"
+    }
   }
 
   parameter: metric {
