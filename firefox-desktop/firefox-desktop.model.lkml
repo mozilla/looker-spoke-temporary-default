@@ -11,6 +11,22 @@ explore: client_counts {
   }
 }
 
+explore: clients_daily_suggest {
+  hidden: yes
+  from: clients_daily
+  sql_always_where: submission_date > DATE_SUB(current_date, INTERVAL 3 DAY) AND sample_id = 84 ;;
+  #sql_always_where: submission_date > '2016-12-13' AND sample_id = 52 ;;
+}
+
+explore: days_of_use_model {
+  from: prediction
+  join: training_data {
+    type: left_outer
+    sql_on: ${training_data.submission_date} = ${days_of_use_model.submission_date} ;;
+    relationship: one_to_one
+  }
+}
+
 explore: event_names {
   from: event_types_legacy
   hidden: yes
@@ -53,20 +69,3 @@ explore: funnel_analysis {
   }
   sql_always_where: funnel_analysis.submission_date > "2010-01-01" ;;
 }
-# include: "/**/*.view.lkml"                 # include all views in this project
-# include: "my_dashboard.dashboard.lookml"   # include a LookML dashboard called my_dashboard
-
-# # Select the views that should be a part of this model,
-# # and define the joins that connect them together.
-#
-# explore: order_items {
-#   join: orders {
-#     relationship: many_to_one
-#     sql_on: ${orders.id} = ${order_items.order_id} ;;
-#   }
-#
-#   join: users {
-#     relationship: many_to_one
-#     sql_on: ${users.id} = ${orders.user_id} ;;
-#   }
-# }
