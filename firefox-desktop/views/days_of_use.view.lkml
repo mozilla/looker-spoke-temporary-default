@@ -95,7 +95,7 @@ view: dau_model {
     DECLARE row_count INT64;
 
     CREATE TABLE IF NOT EXISTS
-      mozdata.analysis.doc_forecasts
+      mozdata.analysis.dou_forecasts
     AS
       SELECT
         CAST(NULL AS TIMESTAMP) AS submission_date,
@@ -108,7 +108,7 @@ view: dau_model {
 
     SET row_count = (
       SELECT COUNT(*)
-      FROM mozdata.analysis.doc_forecasts
+      FROM mozdata.analysis.dou_forecasts
       WHERE conditions = current_conditions);
 
     IF row_count = 0 THEN
@@ -127,7 +127,7 @@ view: dau_model {
         submission_date < '2021-01-01';
 
       -- Load table
-      INSERT INTO mozdata.analysis.doc_forecasts
+      INSERT INTO mozdata.analysis.dou_forecasts
       SELECT
         forecast_timestamp AS submission_date,
         forecast_value AS dau_forecast,
@@ -148,7 +148,7 @@ view: prediction {
       submission_date,
       dau_forecast,
     FROM
-      mozdata.analysis.doc_forecasts
+      mozdata.analysis.dou_forecasts
     WHERE -- Also requires ${dau_model.SQL_TABLE_NAME}
       conditions = ARRAY_TO_STRING(REGEXP_EXTRACT_ALL("""
       {% condition training_data.country %} clients_daily.country {% endcondition %}
