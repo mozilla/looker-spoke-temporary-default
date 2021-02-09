@@ -25,6 +25,7 @@ explore: days_of_use_model {
     sql_on: ${training_data.submission_date} = ${days_of_use_model.submission_date} ;;
     relationship: one_to_one
   }
+  sql_always_where: (${training_data.submission_date} >= '2021-01-01' OR ${training_data.submission_date} IS NULL) ;;
 }
 
 explore: event_names {
