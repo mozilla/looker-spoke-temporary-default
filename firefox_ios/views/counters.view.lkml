@@ -4,14 +4,6 @@ view: counters {
     SELECT
         client_info.client_id,
         CAST(DATE(submission_timestamp) AS TIMESTAMP) AS submission_date,
-        key,
-        SUM(
-          {% if metric._parameter_value contains "labeled_counter" %}
-            mozfun.map.get_key(metrics.{% parameter metric %}, key)
-          {% else %}
-            metrics.{% parameter metric %}
-          {% endif %}
-        ) AS client_aggregate,
         mozfun.stats.mode_last(ARRAY_AGG(normalized_app_name)) AS normalized_app_name,
         mozfun.stats.mode_last(ARRAY_AGG(normalized_channel)) AS normalized_channel,
         mozfun.stats.mode_last(ARRAY_AGG(normalized_country_code)) AS normalized_country_code,
@@ -32,6 +24,14 @@ view: counters {
         mozfun.stats.mode_last(ARRAY_AGG(metadata.geo.country)) AS country,
         mozfun.stats.mode_last(ARRAY_AGG(metadata.geo.subdivision1)) AS subdivision1,
         mozfun.stats.mode_last(ARRAY_AGG(metadata.geo.subdivision2)) AS subdivision2,
+        key,
+        SUM(
+          {% if metric._parameter_value contains "labeled_counter" %}
+            mozfun.map.get_key(metrics.{% parameter metric %}, key)
+          {% else %}
+            metrics.{% parameter metric %}
+          {% endif %}
+        ) AS client_aggregate
     FROM
         `moz-fx-data-shared-prod`.org_mozilla_ios_firefox.metrics m
         CROSS JOIN UNNEST({% if metric._parameter_value contains "labeled_counter" %}
@@ -58,19 +58,9 @@ view: counters {
     suggest_dimension: metrics_counters.metric_name
   }
 
-
   dimension: submission_date {
     type: date
     sql: ${TABLE}.submission_date ;;
-  }
-
-  dimension: label {
-    type: string
-    sql: ${TABLE}.key ;;
-  }
-
-  dimension: client_aggregate {
-    sql: ${TABLE}.client_aggregate ;;
   }
 
   dimension: normalized_app_name {
@@ -215,18 +205,28 @@ view: counters {
     suggest_dimension: metrics_sample.subdivision2
   }
 
+  dimension: label {
+    type: string
+    sql: ${TABLE}.key ;;
+  }
+
+  measure: client_aggregate {
+    type: sum
+    sql: ${TABLE}.client_aggregate ;;
+  }
+
   measure: user_count {
-    sql: COUNTIF(${client_aggregate} > 0) ;;
+    sql: COUNTIF(${TABLE}.client_aggregate > 0) ;;
     type: number
   }
 
   measure: total_count {
-    sql: SUM(${client_aggregate}) ;;
+    sql: SUM(${TABLE}.client_aggregate) ;;
     type: number
   }
 
   measure: fraction_of_users {
-    sql: SAFE_DIVIDE(COUNTIF(${client_aggregate} > 0), COUNT(*)) ;;
+    sql: SAFE_DIVIDE(COUNTIF(${TABLE}.client_aggregate > 0), COUNT(*)) ;;
     type: number
   }
 
