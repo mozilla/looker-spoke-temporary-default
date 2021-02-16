@@ -142,7 +142,7 @@ view: dau_model {
 
 view: prediction {
   derived_table: {
-    persist_for: "1 second"
+    #persist_for: "1 second"
     sql:
     SELECT
       submission_date,

@@ -18,6 +18,8 @@ explore: clients_daily_suggest {
   #sql_always_where: submission_date > '2016-12-13' AND sample_id = 52 ;;
 }
 
+explore: dau_by_country_2021 {}
+
 explore: days_of_use_model {
   from: prediction
   join: training_data {
