@@ -6,7 +6,7 @@ view: raw_event_types {
         event,
         property.key AS property_name,
         property_value.key AS property_value
-      FROM mozdata.tmp.messaging_system_event_types_v1
+      FROM mozdata.messaging_system.event_types
       LEFT JOIN UNNEST(event_properties) AS property
       LEFT JOIN UNNEST(property.value) AS property_value
       ;;
@@ -31,5 +31,10 @@ view: raw_event_types {
   dimension: property_value {
     type: string
     sql: ${TABLE}.property_value ;;
+  }
+
+  dimension: message_event {
+    type: string
+    sql: CONCAT(${TABLE}.category, ' - ', ${TABLE}.event) ;;
   }
 }

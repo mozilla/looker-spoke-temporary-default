@@ -1,5 +1,5 @@
 view: events_daily_v1 {
-  sql_table_name: `mozdata.tmp.messaging_system_events_daily_v1`
+  sql_table_name: mozdata.messaging_system.events_daily
   ;;
 
   dimension: addon_version {
@@ -61,11 +61,6 @@ view: events_daily_v1 {
   dimension: subdivision1 {
     type: string
     sql: ${TABLE}.subdivision1 ;;
-  }
-
-  filter: date {
-    type: date
-    sql: {% condition date %} CAST(cohort_analysis.submission_date AS TIMESTAMP) {% endcondition %} ;;
   }
 
   dimension: submission_date {

@@ -1,82 +1,11 @@
-view: events_daily {
-  sql_table_name: `mozdata.tmp.messaging_system_events_daily_v1`
-    ;;
+include: "/user_journey/views/events_daily_v1.view.lkml"
 
-  dimension: client_id_day {
-    type: string
-    sql: CONCAT(client_id, CAST(submission_date AS STRING)) ;;
-    primary_key: yes
-  }
-
-  dimension: addon_version {
-    type: string
-    sql: ${TABLE}.addon_version ;;
-  }
-
-  dimension: app_version {
-    type: string
-    sql: ${TABLE}.app_version ;;
-  }
-
-  dimension: city {
-    type: string
-    sql: ${TABLE}.city ;;
-  }
-
-  dimension: client_id {
-    type: string
-    sql: ${TABLE}.client_id ;;
-  }
-
-  dimension: country {
-    type: string
-    map_layer_name: countries
-    sql: ${TABLE}.country ;;
-  }
-
-  dimension: events {
-    type: string
-    sql: ${TABLE}.events ;;
-  }
-
-  dimension: experiments {
-    hidden: yes
-    sql: ${TABLE}.experiments ;;
-  }
-
-  dimension: locale {
-    type: string
-    sql: ${TABLE}.locale ;;
-  }
-
-  dimension: normalized_channel {
-    type: string
-    sql: ${TABLE}.normalized_channel ;;
-  }
-
-  dimension: os {
-    type: string
-    sql: ${TABLE}.os ;;
-  }
-
-  dimension: sample_id {
-    type: number
-    sql: ${TABLE}.sample_id ;;
-  }
-
-  dimension: subdivision1 {
-    type: string
-    sql: ${TABLE}.subdivision1 ;;
-  }
+view: funnel_analysis {
+  extends: [events_daily_v1]
 
   filter: date {
     type: date
     sql: {% condition date %} CAST(funnel_analysis.submission_date AS TIMESTAMP) {% endcondition %} ;;
-  }
-
-  dimension: submission_date {
-    type: date
-    sql: CAST(${TABLE}.submission_date AS TIMESTAMP) ;;
   }
 
   dimension: completed_event_1 {
@@ -114,20 +43,6 @@ view: events_daily {
               ${event_3.match_string},
               ${event_4.match_string}],
             True)) ;;
-  }
-
-  dimension: completed_all_funnel_steps {
-    type: yesno
-    sql: {% if event_4.message_id._is_filtered %}
-          ${completed_event_4}
-          {% elsif event_3.message_id.is_filtered %}
-          ${completed_event_3}
-          {% elsif event_2.message_id.is_filtered %}
-          ${completed_event_2}
-          {% elsif event_1.message_id.is_filtered %}
-          ${completed_event_1}
-
-          {% endif %};;
   }
 
   measure: total_user_days {
@@ -200,18 +115,5 @@ view: events_daily {
     label: "Fraction Completed Step 4"
     sql: SAFE_DIVIDE(${count_user_days_event4}, ${count_user_days_event1}) ;;
     type: number
-  }
-}
-
-view: events_daily_experiments {
-  dimension: experiment {
-    type: string
-    sql: ${TABLE}.key ;;
-    primary_key: yes
-  }
-
-  dimension: branch {
-    type: string
-    sql: ${TABLE}.value ;;
   }
 }

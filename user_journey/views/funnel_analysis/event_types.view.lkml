@@ -6,7 +6,7 @@ view: event_1 {
           ARRAY_AGG(
             mozfun.event_analysis.event_index_to_match_string(index))) AS match_string
       FROM
-        `mozdata.tmp.messaging_system_event_types_v1` event_types
+        mozdata.messaging_system.event_types
       WHERE
         {% condition event_1.message_id %} event_types.category {% endcondition %}
         AND {% condition event_1.event_type %} event_types.event {% endcondition %};;
@@ -45,7 +45,7 @@ view: event_2 {
           ARRAY_AGG(
             mozfun.event_analysis.event_index_to_match_string(index))) AS match_string
       FROM
-        `mozdata.tmp.messaging_system_event_types_v1` event_types
+        mozdata.messaging_system.event_types
       WHERE
         {% condition event_2.message_id %} event_types.category {% endcondition %}
         AND {% condition event_2.event_type %} event_types.event {% endcondition %};;
@@ -84,7 +84,7 @@ view: event_3 {
           ARRAY_AGG(
             mozfun.event_analysis.event_index_to_match_string(index))) AS match_string
       FROM
-        `mozdata.tmp.messaging_system_event_types_v1` event_types
+        mozdata.messaging_system.event_types
       WHERE
         {% condition event_3.message_id %} event_types.category {% endcondition %}
         AND {% condition event_3.event_type %} event_types.event {% endcondition %};;
@@ -123,7 +123,7 @@ view: event_4 {
           ARRAY_AGG(
             mozfun.event_analysis.event_index_to_match_string(index))) AS match_string
       FROM
-        `mozdata.tmp.messaging_system_event_types_v1` event_types
+        mozdata.messaging_system.event_types
       WHERE
         {% condition event_4.message_id %} event_types.category {% endcondition %}
         AND {% condition event_4.event_type %} event_types.event {% endcondition %};;
