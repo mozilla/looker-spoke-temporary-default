@@ -34,52 +34,40 @@ view: days_of_use {
     hidden: yes
   }
 
-  dimension: number_of_bytes {
-    description: "The number of bytes to include our relevant period"
-    type: number
-    sql:  CAST(CEILING(-1 * ${day_diff_funnels} / 8) AS INT64);;
-    hidden: yes
-  }
-
-  dimension: bit_offset {
-    description: "The number of bits included at the beginning if ${number_of_bytes} that are not included in our window"
-    type: number
-    sql: MOD((8 * CAST(CEIL(${day_diff_funnels} / 8) AS INT64) - ${day_diff_funnels}), 8) ;;
-    hidden: yes
-  }
-
   dimension: days_seen_bytes {
     type: string
-    sql: SUBSTR(${TABLE}.days_seen_bytes, ${number_of_bytes}) ;;
-    hidden: yes
-  }
-
-  dimension: days_seen_bytes_56_reversed {
-    type: string
-    sql: REVERSED(SUBSTR(${days_seen_bytes} << ${bit_offset}, -7)) ;;
+    sql: ${TABLE}.days_seen_bytes ;;
   }
 
   dimension: days_seen_bits_56 {
     type: string
-    sql: IF(${day_diff_funnels} >= 56, REVERSED(SUBSTR(${days_seen_bytes}, -7)) & b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF', NULL) ;;
+    sql: IF(${day_diff_funnels} >= 56,
+            mozfun.bytes.extract_bits(${days_seen_bytes}, -1 * ${day_diff_funnels}, 56),
+            NULL) ;;
     hidden: yes
   }
 
   dimension: days_seen_bits_28 {
     type: string
-    sql: IF(${day_diff_funnels} >= 28, SUBSTR(${TABLE}.days_seen_bytes, -4) & b'\x0F\xFF\xFF\xFF', NULL) ;;
+    sql: IF(${day_diff_funnels} >= 28,
+            mozfun.bytes.extract_bits(${days_seen_bytes}, -1 * ${day_diff_funnels}, 28),
+            NULL) ;;
     hidden: yes
   }
 
   dimension: days_seen_bits_14 {
     type: string
-    sql: IF(${day_diff_funnels} >= 14, SUBSTR(${TABLE}.days_seen_bytes, -2) & b'\x3F\xFF', NULL) ;;
+    sql: IF(${day_diff_funnels} >= 14,
+            mozfun.bytes.extract_bits(${days_seen_bytes}, -1 * ${day_diff_funnels}, 14),
+            NULL) ;;
     hidden: yes
   }
 
   dimension: days_seen_bits_7 {
     type: string
-    sql: IF(${day_diff_funnels} >= 7, SUBSTR(${TABLE}.days_seen_bytes, -1) & b'\x7F', NULL) ;;
+    sql: IF(${day_diff_funnels} >= 7,
+            mozfun.bytes.extract_bits(${days_seen_bytes}, -1 * ${day_diff_funnels}, 7),
+            NULL) ;;
     hidden: yes
   }
 
@@ -138,13 +126,13 @@ view: days_of_use {
   }
 
   measure: 7_day_total_days_of_use {
-    label: " 7 Day Total Days of Use"
+    label: " 7 Day Total Days of Use" # Space sorts this before e.g. 14
     type: sum
     sql: ${days_of_use_7} ;;
   }
 
   measure: 7_day_avg_days_of_use {
-    label: " 7 Day Avg Days of Use"
+    label: " 7 Day Avg Days of Use" # Space sorts this before e.g. 14
     type: average
     sql: ${days_of_use_7} ;;
   }

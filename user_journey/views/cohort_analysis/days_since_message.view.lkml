@@ -26,6 +26,10 @@ view: days_since_message {
       label: "One Month"
       value: "28"
     }
+    allowed_value: {
+      label: "Two Months"
+      value: "56"
+    }
   }
 
   dimension: days_since_message {

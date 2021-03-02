@@ -1,7 +1,7 @@
-include: "/user_journey/views/events_daily_v1.view.lkml"
+include: "//looker-hub/user_journey/views/events_daily.view.lkml"
 
 view: cohort {
-  extends: [events_daily_v1]
+  extends: [events_daily]
 
   filter: date {
     type: date

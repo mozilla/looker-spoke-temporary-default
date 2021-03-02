@@ -28,22 +28,23 @@ view: clients_last_seen {
     hidden: yes
   }
 
-  dimension: n_bytes {
-    type: string
-    sql: -1 * CAST(CEILING(days_since_message.days_since_message / 8) AS INT64) ;;
+  dimension: day_diff_cohorts {
+    type: number
+    sql:  DATE_DIFF(${TABLE}.submission_date, ${cohort_analysis.submission_date}, DAY);;
     hidden: yes
+  }
+
+  dimension: days_seen_bytes {
+    type: string
+    sql: ${TABLE}.days_seen_bytes ;;
   }
 
   dimension: days_seen_bits {
     type: string
-    sql: SUBSTR(
-          ${TABLE}.days_seen_bytes,
-          ${n_bytes}
-        ) & SUBSTR(
-          FROM_HEX(`moz-fx-data-shared-prod`.udf.int_to_hex_string(CAST(POW(2, days_since_message.days_since_message) - 1 AS INT64))),
-          ${n_bytes}
-        );;
-    hidden: yes
+    sql:
+      IF(${day_diff_cohorts} >= days_since_message.days_since_message,
+         mozfun.bytes.extract_bits(${days_seen_bytes}, (-1 * ${day_diff_cohorts}), days_since_message.days_since_message),
+         NULL);;
   }
 
   dimension: days_of_use {
