@@ -34,7 +34,7 @@ view: counters {
         mozfun.stats.mode_last(ARRAY_AGG(metadata.geo.subdivision1)) AS subdivision1,
         mozfun.stats.mode_last(ARRAY_AGG(metadata.geo.subdivision2)) AS subdivision2,
     FROM
-        `moz-fx-data-shared-prod`.org_mozilla_ios_firefox.metrics m
+        `moz-fx-data-shared-prod`.org_mozilla_ios_firefox.unified_metrics m
         CROSS JOIN UNNEST({% if metric._parameter_value contains "labeled_counter" %}
                             ARRAY(
                                SELECT DISTINCT AS STRUCT key
