@@ -12,6 +12,7 @@ view: counters {
             metrics.{% parameter metric %}
           {% endif %}
         ) AS client_aggregate,
+        mozfun.stats.mode_last(ARRAY_AGG(telemetry_system)) AS telemetry_system,
         mozfun.stats.mode_last(ARRAY_AGG(normalized_app_name)) AS normalized_app_name,
         mozfun.stats.mode_last(ARRAY_AGG(normalized_channel)) AS normalized_channel,
         mozfun.stats.mode_last(ARRAY_AGG(normalized_country_code)) AS normalized_country_code,
@@ -64,10 +65,18 @@ view: counters {
     sql: ${TABLE}.submission_date ;;
   }
 
+
+  dimension: telemetry_system {
+    type: string
+    sql: ${TABLE}.telemetry_system ;;
+  }
+
+
   dimension: label {
     type: string
     sql: ${TABLE}.key ;;
   }
+
 
   dimension: client_aggregate {
     sql: ${TABLE}.client_aggregate ;;
