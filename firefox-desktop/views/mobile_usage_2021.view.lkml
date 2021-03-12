@@ -48,24 +48,24 @@ view: mobile_usage_2021 {
     sql: ${TABLE}.submission_date ;;
   }
 
+  measure: dau {
+    type: sum
+    sql: ${TABLE}.dau ;;
+  }
+  
   measure: wau {
     type: sum
     sql: ${TABLE}.wau ;;
   }
 
-  measure: dau {
+  measure: mau {
     type: sum
-    sql: ${TABLE}.dau ;;
+    sql: ${TABLE}.mau ;;
   }
 
   measure: cdou {
     type: sum
     sql: ${TABLE}.cdou ;;
-  }
-
-  measure: mau {
-    type: sum
-    sql: ${TABLE}.mau ;;
   }
 
 }
