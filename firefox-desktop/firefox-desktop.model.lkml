@@ -1,6 +1,7 @@
 connection: "telemetry"
 
 include: "views/*.view.lkml"                # include all views in the views/ folder in this project
+include: "dashboards/*.dashboard"
 
 explore: client_counts {
   always_filter: {
@@ -53,6 +54,31 @@ explore: funnel_analysis {
   }
   sql_always_where: funnel_analysis.submission_date > "2010-01-01" ;;
 }
+
+explore: firefox_desktop_usage_2021 {
+  label: "Firefox Desktop Usage"
+  group_label: "Firefox-desktop"
+  from: firefox_desktop_usage_2021
+}
+
+explore: desktop_kpis {
+  group_label: "KPIs"
+  sql_always_where: ${date} >= '2021-01-01' ;;
+  label: "Desktop KPIs"
+  join: loines_desktop_dau_forecast_20210119  {
+    view_label: "DAU Forecast"
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${loines_desktop_dau_forecast_20210119.date} = ${desktop_kpis.date} ;;
+  }
+  join:  loines_desktop_new_profiles_forecast_20210119 {
+    view_label: "New Profiles Forecast"
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${loines_desktop_new_profiles_forecast_20210119.date} = ${desktop_kpis.date} ;;
+  }
+}
+
 # include: "/**/*.view.lkml"                 # include all views in this project
 # include: "my_dashboard.dashboard.lookml"   # include a LookML dashboard called my_dashboard
 
